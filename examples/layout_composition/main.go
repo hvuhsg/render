@@ -32,7 +32,7 @@ func main() {
 	// Create a column with some text
 	textColumn := &render_objects.Column{
 		Children: []render_objects.RenderObject{
-			render_objects.NewText("Layout Example", cv.Black, 24, "default"),
+			render_objects.NewText("Layout Example", cv.White, 24, "default"),
 			row,
 		},
 	}

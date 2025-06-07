@@ -10,12 +10,11 @@ type Stack struct {
 }
 
 func (s *Stack) Paint(canvas *cv.Canvas) {
-	stackCanvas := cv.NewCanvas(s.Size(canvas.Size))
 	for _, child := range s.Children {
-		child.Paint(stackCanvas)
+		childSize := child.Size(canvas.Size)
+		childCanvas := canvas.SubCanvas(0, 0, childSize, nil)
+		child.Paint(childCanvas)
 	}
-
-	canvas.DrawCanvas(stackCanvas, 0, 0)
 }
 
 func (s *Stack) Size(parentSize types.Size) types.Size {

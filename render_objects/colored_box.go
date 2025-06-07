@@ -3,23 +3,23 @@ package render_objects
 import (
 	"image/color"
 
-	cv "github.com/hvuhsg/render/canvas"
-	types "github.com/hvuhsg/render/types"
+	"github.com/hvuhsg/render/canvas"
+	"github.com/hvuhsg/render/types"
 )
 
 type ColoredBox struct {
+	Color  color.RGBA
 	Width  int
 	Height int
-	Color  color.RGBA
 }
 
-func (c *ColoredBox) Paint(canvas *cv.Canvas) {
-	canvas.Rectangle(0, 0, c.Width, c.Height, c.Color, true)
+func (cb *ColoredBox) Paint(c *canvas.Canvas) {
+	c.Rectangle(0, 0, cb.Width, cb.Height, cb.Color, true)
 }
 
-func (c *ColoredBox) Size(parentSize types.Size) types.Size {
+func (cb *ColoredBox) Size(parentSize types.Size) types.Size {
 	return types.Size{
-		Width:  c.Width,
-		Height: c.Height,
+		Width:  cb.Width,
+		Height: cb.Height,
 	}
 }

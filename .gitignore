@@ -1,0 +1,7 @@
+# .gitignore
+# Exclude all PNG files except those in the examples directory
+*.png
+!examples/**/*.png
+
+*.prof
+*.test

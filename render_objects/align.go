@@ -26,29 +26,40 @@ const (
 
 func (a *Align) Paint(canvas *cv.Canvas) {
 	childSize := a.Child.Size(canvas.Size)
-	childCanvas := cv.NewCanvas(childSize)
-	a.Child.Paint(childCanvas)
 
+	var x, y int
 	switch a.Align {
 	case AlignTopLeft:
-		canvas.DrawCanvas(childCanvas, 0, 0)
+		x = 0
+		y = 0
 	case AlignTopCenter:
-		canvas.DrawCanvas(childCanvas, (canvas.Size.Width-childSize.Width)/2, 0)
+		x = (canvas.Size.Width - childSize.Width) / 2
+		y = 0
 	case AlignTopRight:
-		canvas.DrawCanvas(childCanvas, canvas.Size.Width-childSize.Width, 0)
+		x = canvas.Size.Width - childSize.Width
+		y = 0
 	case AlignLeftCenter:
-		canvas.DrawCanvas(childCanvas, 0, (canvas.Size.Height-childSize.Height)/2)
+		x = 0
+		y = (canvas.Size.Height - childSize.Height) / 2
 	case AlignRightCenter:
-		canvas.DrawCanvas(childCanvas, canvas.Size.Width-childSize.Width, (canvas.Size.Height-childSize.Height)/2)
+		x = canvas.Size.Width - childSize.Width
+		y = (canvas.Size.Height - childSize.Height) / 2
 	case AlignBottomLeft:
-		canvas.DrawCanvas(childCanvas, 0, canvas.Size.Height-childSize.Height)
+		x = 0
+		y = canvas.Size.Height - childSize.Height
 	case AlignBottomCenter:
-		canvas.DrawCanvas(childCanvas, (canvas.Size.Width-childSize.Width)/2, canvas.Size.Height-childSize.Height)
+		x = (canvas.Size.Width - childSize.Width) / 2
+		y = canvas.Size.Height - childSize.Height
 	case AlignBottomRight:
-		canvas.DrawCanvas(childCanvas, canvas.Size.Width-childSize.Width, canvas.Size.Height-childSize.Height)
+		x = canvas.Size.Width - childSize.Width
+		y = canvas.Size.Height - childSize.Height
 	case AlignCenter:
-		canvas.DrawCanvas(childCanvas, (canvas.Size.Width-childSize.Width)/2, (canvas.Size.Height-childSize.Height)/2)
+		x = (canvas.Size.Width - childSize.Width) / 2
+		y = (canvas.Size.Height - childSize.Height) / 2
 	}
+
+	childCanvas := canvas.SubCanvas(x, y, childSize, nil)
+	a.Child.Paint(childCanvas)
 }
 
 func (a *Align) Size(parentSize types.Size) types.Size {

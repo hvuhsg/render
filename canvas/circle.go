@@ -6,11 +6,7 @@ import (
 )
 
 func (c *Canvas) Circle(x, y, r int, color color.RGBA, fill bool) {
-	c.assertPointInBounds(x, y)
-	c.assertPointInBounds(x+r, y)
-	c.assertPointInBounds(x, y+r)
-	c.assertPointInBounds(x-r, y)
-	c.assertPointInBounds(x, y-r)
+	// No bounds checking here; set will handle it
 
 	if fill {
 		// Fill the circle by drawing horizontal lines

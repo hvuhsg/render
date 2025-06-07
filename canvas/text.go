@@ -35,14 +35,14 @@ func (c *Canvas) DrawText(text string, x, y int, painter *TextPainter) {
 	ctx.SetDPI(72)
 	ctx.SetFont(painter.Font)
 	ctx.SetFontSize(painter.FontSize)
-	ctx.SetClip(image.Rect(0, 0, c.Size.Width, c.Size.Height))
+	ctx.SetClip(image.Rect(c.offset.X, c.offset.Y, c.offset.X+c.Size.Width, c.offset.Y+c.Size.Height))
 	ctx.SetDst(c.Img)
 	ctx.SetSrc(image.NewUniform(painter.TextColor))
 
 	// Calculate the baseline position
 	// The y position is the baseline, so we need to adjust for the font height
 	baseline := y + int(painter.FontSize)
-	pt := freetype.Pt(x, baseline)
+	pt := freetype.Pt(c.offset.X+x, c.offset.Y+baseline)
 	ctx.DrawString(text, pt)
 }
 

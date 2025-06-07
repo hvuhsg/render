@@ -1,6 +1,9 @@
 package canvas
 
-import "image/color"
+import (
+	"image/color"
+	"sort"
+)
 
 // Polygon draws a filled polygon defined by the given points
 func (c *Canvas) Polygon(points [][2]int, color color.RGBA, filled bool) {
@@ -8,16 +11,18 @@ func (c *Canvas) Polygon(points [][2]int, color color.RGBA, filled bool) {
 		return
 	}
 
+	if !filled {
+		// Draw the outline by connecting points with lines
+		for i := 0; i < len(points); i++ {
+			j := (i + 1) % len(points)
+			c.drawLine(points[i][0], points[i][1], points[j][0], points[j][1], color)
+		}
+		return
+	}
+
 	// Find the bounding box
-	minX, minY := points[0][0], points[0][1]
-	maxX, maxY := points[0][0], points[0][1]
+	minY, maxY := points[0][1], points[0][1]
 	for _, p := range points {
-		if p[0] < minX {
-			minX = p[0]
-		}
-		if p[0] > maxX {
-			maxX = p[0]
-		}
 		if p[1] < minY {
 			minY = p[1]
 		}
@@ -26,11 +31,31 @@ func (c *Canvas) Polygon(points [][2]int, color color.RGBA, filled bool) {
 		}
 	}
 
-	// For each point in the bounding box, check if it's inside the polygon
+	// For each scan line
 	for y := minY; y <= maxY; y++ {
-		for x := minX; x <= maxX; x++ {
-			if c.isPointInPolygon(x, y, points) {
-				c.set(x, y, color)
+		// Find intersections with polygon edges
+		var intersections []int
+		j := len(points) - 1
+		for i := 0; i < len(points); i++ {
+			if (points[i][1] > y) != (points[j][1] > y) {
+				// Calculate x-coordinate of intersection
+				x := points[i][0] + (y-points[i][1])*(points[j][0]-points[i][0])/(points[j][1]-points[i][1])
+				intersections = append(intersections, x)
+			}
+			j = i
+		}
+
+		// Sort intersections
+		sort.Ints(intersections)
+
+		// Fill between pairs of intersections
+		for i := 0; i < len(intersections); i += 2 {
+			if i+1 < len(intersections) {
+				startX := intersections[i]
+				endX := intersections[i+1]
+				for x := startX; x <= endX; x++ {
+					c.set(x, y, color)
+				}
 			}
 		}
 	}

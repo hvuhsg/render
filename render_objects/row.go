@@ -5,27 +5,12 @@ import (
 	"github.com/hvuhsg/render/types"
 )
 
-type RowAlignment int
-type RowSizing int
-
-const (
-	RowAlignmentStart RowAlignment = iota
-	RowAlignmentCenter
-	RowAlignmentEnd
-	RowAlignmentSpaceBetween
-	RowAlignmentSpaceAround
-	RowAlignmentSpaceEvenly
-)
-
-const (
-	RowSizingMin RowSizing = iota // Row takes minimum width needed for children
-	RowSizingMax                  // Row takes maximum width (canvas width)
-)
-
 type Row struct {
-	Alignment RowAlignment
-	Sizing    RowSizing
-	Children  []RenderObject
+	Alignment      types.MainAxisAlignment
+	Sizing         types.MainAxisSize
+	Children       []RenderObject
+	cachedSize     *types.Size
+	lastParentSize types.Size
 }
 
 func (r *Row) Paint(canvas *cv.Canvas) {
@@ -43,7 +28,7 @@ func (r *Row) Paint(canvas *cv.Canvas) {
 	availableSpace := canvas.Size.Width - totalWidth
 
 	switch r.Alignment {
-	case RowAlignmentStart:
+	case types.MainAxisAlignmentStart:
 		// Children start from the left (default behavior)
 		xOffsets = make([]int, len(r.Children))
 		offset := 0
@@ -52,7 +37,7 @@ func (r *Row) Paint(canvas *cv.Canvas) {
 			offset += childSizes[i].Width
 		}
 
-	case RowAlignmentEnd:
+	case types.MainAxisAlignmentEnd:
 		// Children start from the right
 		xOffsets = make([]int, len(r.Children))
 		offset := availableSpace
@@ -61,7 +46,7 @@ func (r *Row) Paint(canvas *cv.Canvas) {
 			offset += childSizes[i].Width
 		}
 
-	case RowAlignmentCenter:
+	case types.MainAxisAlignmentCenter:
 		// Children are centered
 		xOffsets = make([]int, len(r.Children))
 		offset := availableSpace / 2
@@ -70,7 +55,7 @@ func (r *Row) Paint(canvas *cv.Canvas) {
 			offset += childSizes[i].Width
 		}
 
-	case RowAlignmentSpaceBetween:
+	case types.MainAxisAlignmentSpaceBetween:
 		// Space is distributed between children
 		if len(r.Children) <= 1 {
 			xOffsets = make([]int, len(r.Children))
@@ -87,7 +72,7 @@ func (r *Row) Paint(canvas *cv.Canvas) {
 			}
 		}
 
-	case RowAlignmentSpaceAround:
+	case types.MainAxisAlignmentSpaceAround:
 		// Space is distributed around children
 		spaceAround := availableSpace / len(r.Children)
 		xOffsets = make([]int, len(r.Children))
@@ -97,7 +82,7 @@ func (r *Row) Paint(canvas *cv.Canvas) {
 			offset += childSizes[i].Width + spaceAround
 		}
 
-	case RowAlignmentSpaceEvenly:
+	case types.MainAxisAlignmentSpaceEvenly:
 		// Space is distributed evenly
 		spaceEvenly := availableSpace / (len(r.Children) + 1)
 		xOffsets = make([]int, len(r.Children))
@@ -110,34 +95,43 @@ func (r *Row) Paint(canvas *cv.Canvas) {
 
 	// Draw children at calculated positions
 	for i, child := range r.Children {
-		childCanvas := cv.NewCanvas(childSizes[i])
+		childCanvas := canvas.SubCanvas(xOffsets[i], 0, childSizes[i], nil)
 		child.Paint(childCanvas)
-		canvas.DrawCanvas(childCanvas, xOffsets[i], 0)
 	}
 }
 
 func (r *Row) Size(parentSize types.Size) types.Size {
-	totalWidth := 0
-	for _, child := range r.Children {
-		totalWidth += child.Size(parentSize).Width
+	// Check if we can use cached size
+	if r.cachedSize != nil && r.lastParentSize == parentSize {
+		return *r.cachedSize
 	}
 
+	totalWidth := 0
 	maxHeight := 0
+
+	// Calculate sizes in a single pass without storing all sizes
 	for _, child := range r.Children {
-		if child.Size(parentSize).Height > maxHeight {
-			maxHeight = child.Size(parentSize).Height
+		size := child.Size(parentSize)
+		totalWidth += size.Width
+		if size.Height > maxHeight {
+			maxHeight = size.Height
 		}
 	}
 
-	// If RowSizingMax is set, use the parent width
+	// If MainAxisSizeMax is set, use the parent width
 	// Otherwise, use the minimum width needed for children
 	width := totalWidth
-	if r.Sizing == RowSizingMax {
+	if r.Sizing == types.MainAxisSizeMax {
 		width = parentSize.Width
 	}
 
-	return types.Size{
+	// Cache the result
+	size := types.Size{
 		Width:  width,
 		Height: maxHeight,
 	}
+	r.cachedSize = &size
+	r.lastParentSize = parentSize
+
+	return size
 }

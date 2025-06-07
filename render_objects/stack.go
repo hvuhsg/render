@@ -6,7 +6,8 @@ import (
 )
 
 type Stack struct {
-	Children []RenderObject
+	Children   []RenderObject
+	cachedSize *types.Size
 }
 
 func (s *Stack) Paint(canvas *cv.Canvas) {
@@ -18,19 +19,26 @@ func (s *Stack) Paint(canvas *cv.Canvas) {
 }
 
 func (s *Stack) Size(parentSize types.Size) types.Size {
+	if s.cachedSize != nil {
+		return *s.cachedSize
+	}
+
 	maxHeight := 0
-	for _, child := range s.Children {
-		if child.Size(parentSize).Height > maxHeight {
-			maxHeight = child.Size(parentSize).Height
-		}
-	}
-
 	maxWidth := 0
+
+	// Calculate sizes in a single pass
 	for _, child := range s.Children {
-		if child.Size(parentSize).Width > maxWidth {
-			maxWidth = child.Size(parentSize).Width
+		size := child.Size(parentSize)
+		if size.Height > maxHeight {
+			maxHeight = size.Height
+		}
+		if size.Width > maxWidth {
+			maxWidth = size.Width
 		}
 	}
 
-	return types.Size{Width: maxWidth, Height: maxHeight}
+	size := types.Size{Width: maxWidth, Height: maxHeight}
+	s.cachedSize = &size
+
+	return size
 }

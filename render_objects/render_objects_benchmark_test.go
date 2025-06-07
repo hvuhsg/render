@@ -220,3 +220,48 @@ func BenchmarkPadding(b *testing.B) {
 		}
 	})
 }
+
+func BenchmarkBorder(b *testing.B) {
+	canvas := cv.NewCanvas(types.Size{Width: 1000, Height: 1000}, false)
+	red := color.RGBA{255, 0, 0, 255}
+	blue := color.RGBA{0, 0, 255, 255}
+	box := &ColoredBox{Width: 100, Height: 100, Color: blue}
+
+	// Test in-bounds border
+	inBoundsBorder := &Border{
+		Child: box,
+		Width: 5,
+		Color: red,
+	}
+
+	b.Run("ThinBorder/Paint", func(b *testing.B) {
+		for b.Loop() {
+			inBoundsBorder.Paint(canvas)
+		}
+	})
+
+	b.Run("ThinBorder/Size", func(b *testing.B) {
+		for b.Loop() {
+			inBoundsBorder.Size(canvas.Size)
+		}
+	})
+
+	// Test different border widths
+	thickBorder := &Border{
+		Child: box,
+		Width: 20,
+		Color: red,
+	}
+
+	b.Run("ThickBorder/Paint", func(b *testing.B) {
+		for b.Loop() {
+			thickBorder.Paint(canvas)
+		}
+	})
+
+	b.Run("ThickBorder/Size", func(b *testing.B) {
+		for b.Loop() {
+			thickBorder.Size(canvas.Size)
+		}
+	})
+}

@@ -77,8 +77,8 @@ func createRenderTree() render_objects.RenderObject {
 			circle,
 			textColumn,
 		},
-		Alignment: render_objects.RowAlignmentSpaceBetween,
-		Sizing:    render_objects.RowSizingMax,
+		Alignment: types.MainAxisAlignmentSpaceBetween,
+		Sizing:    types.MainAxisSizeMax,
 	}
 
 	// Center everything in the canvas

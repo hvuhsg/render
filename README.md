@@ -61,7 +61,11 @@ func main() {
 
     // Render and save
     align.Paint(canvas)
-    canvas.SaveToFile("output.png")
+
+    // Save the result
+	file, _ := os.Create("result.png")
+	defer file.Close()
+	png.Encode(file, canvas.Img)
 }
 ```
 

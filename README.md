@@ -87,3 +87,29 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Examples
+
+### Basic Shapes
+
+This example demonstrates drawing basic shapes. [View the code.](examples/basic_shapes/main.go)
+
+![Basic Shapes Output](examples/basic_shapes/basic_shapes.png)
+
+### Text Rendering
+
+This example demonstrates rendering styled text. [View the code.](examples/text_rendering/main.go)
+
+![Text Rendering Output](examples/text_rendering/text_rendering.png)
+
+### Layout Composition
+
+This example demonstrates layout composition with rows and columns. [View the code.](examples/layout_composition/main.go)
+
+![Layout Composition Output](examples/layout_composition/layout_composition.png)
+
+### Custom Rendering
+
+This example demonstrates custom rendering logic. [View the code.](examples/custom_rendering/main.go)
+
+![Custom Rendering Output](examples/custom_rendering/custom_rendering.png)

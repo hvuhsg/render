@@ -93,9 +93,8 @@ func (r *Row) Paint(canvas *cv.Canvas) {
 
 	// Draw children at calculated positions
 	for i, child := range r.Children {
-		childCanvas := cv.NewCanvas(childSizes[i])
+		childCanvas := canvas.SubCanvas(xOffsets[i], 0, childSizes[i])
 		child.Paint(childCanvas)
-		canvas.DrawCanvas(childCanvas, xOffsets[i], 0)
 	}
 }
 

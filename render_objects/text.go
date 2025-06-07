@@ -34,13 +34,6 @@ func (t *Text) Paint(c *canvas.Canvas) {
 
 	// Draw the text
 	c.DrawText(t.text, 0, 0, painter)
-
-	// Calculate and store the size
-	textBounds := c.MeasureText(t.text, painter)
-	t.size = types.Size{
-		Width:  textBounds.Width,
-		Height: textBounds.Height,
-	}
 }
 
 func (t *Text) Size(parentSize types.Size) types.Size {

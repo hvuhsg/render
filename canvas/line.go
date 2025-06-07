@@ -15,17 +15,67 @@ func (c *Canvas) Line(x1, y1, x2, y2 int, color color.RGBA, width int) {
 		return
 	}
 
-	// Calculate the perpendicular vector for width
+	// Use optimized line drawing based on width
+	if width <= 1 {
+		c.drawLine(x1, y1, x2, y2, color)
+	} else {
+		c.drawThickLine(x1, y1, x2, y2, color, width)
+	}
+}
+
+// drawLine draws a line using Bresenham's algorithm
+func (c *Canvas) drawLine(x1, y1, x2, y2 int, color color.RGBA) {
+	dx := abs(x2 - x1)
+	dy := abs(y2 - y1)
+	sx := 1
+	if x1 > x2 {
+		sx = -1
+	}
+	sy := 1
+	if y1 > y2 {
+		sy = -1
+	}
+	err := dx - dy
+
+	for {
+		c.set(x1, y1, color)
+		if x1 == x2 && y1 == y2 {
+			break
+		}
+		e2 := 2 * err
+		if e2 > -dy {
+			err -= dy
+			x1 += sx
+		}
+		if e2 < dx {
+			err += dx
+			y1 += sy
+		}
+	}
+}
+
+// drawThickLine draws a line with width using an optimized approach
+func (c *Canvas) drawThickLine(x1, y1, x2, y2 int, color color.RGBA, width int) {
+	if width <= 1 {
+		c.drawLine(x1, y1, x2, y2, color)
+		return
+	}
+
+	// Calculate the perpendicular vector
 	dx := float64(x2 - x1)
 	dy := float64(y2 - y1)
 	length := math.Sqrt(dx*dx + dy*dy)
+	if length == 0 {
+		c.Circle(x1, y1, width, color, true)
+		return
+	}
 
 	// Normalize and scale by half width
 	halfWidth := float64(width) / 2
 	px := -dy / length * halfWidth
 	py := dx / length * halfWidth
 
-	// Calculate the four corners of the line rectangle
+	// Calculate the four corners
 	x1f, y1f := float64(x1), float64(y1)
 	x2f, y2f := float64(x2), float64(y2)
 
@@ -48,4 +98,11 @@ func (c *Canvas) Line(x1, y1, x2, y2 int, color color.RGBA, width int) {
 
 	// Draw the filled polygon
 	c.Polygon(points, color, true)
+}
+
+func abs(x int) int {
+	if x < 0 {
+		return -x
+	}
+	return x
 }

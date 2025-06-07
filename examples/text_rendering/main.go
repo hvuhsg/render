@@ -11,7 +11,7 @@ import (
 
 func main() {
 	// Create a new canvas
-	canvas := cv.NewCanvas(types.Size{Width: 800, Height: 600})
+	canvas := cv.NewCanvas(types.Size{Width: 800, Height: 600}, false)
 
 	// Create text objects with different properties
 	title := render_objects.NewText("Hello, Render!", cv.Red, 48, "default")

@@ -30,7 +30,7 @@ func (p *CustomPattern) Paint(canvas *cv.Canvas) {
 
 func main() {
 	// Create a new canvas
-	canvas := cv.NewCanvas(types.Size{Width: 800, Height: 600})
+	canvas := cv.NewCanvas(types.Size{Width: 800, Height: 600}, false)
 
 	// Create a custom pattern
 	pattern := &CustomPattern{}

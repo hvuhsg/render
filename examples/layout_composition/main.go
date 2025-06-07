@@ -11,7 +11,7 @@ import (
 
 func main() {
 	// Create a new canvas
-	canvas := cv.NewCanvas(types.Size{Width: 800, Height: 600})
+	canvas := cv.NewCanvas(types.Size{Width: 800, Height: 600}, false)
 
 	// Create some colored boxes
 	redBox := &render_objects.ColoredBox{Width: 100, Height: 100, Color: cv.Red}

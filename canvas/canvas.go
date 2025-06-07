@@ -11,30 +11,42 @@ import (
 var ErrOutOfBounds = errors.New("object is trying to be painted out of bounds")
 
 type Canvas struct {
-	Img    *image.RGBA
-	Size   types.Size
-	offset image.Point
+	Img              *image.RGBA
+	Size             types.Size
+	offset           image.Point
+	AllowOutOfBounds bool
 }
 
-func NewCanvas(size types.Size) *Canvas {
+func NewCanvas(size types.Size, allowOutOfBounds bool) *Canvas {
 	img := image.NewRGBA(image.Rect(0, 0, size.Width, size.Height))
 	return &Canvas{
-		Img:    img,
-		Size:   size,
-		offset: image.Point{X: 0, Y: 0},
+		Img:              img,
+		Size:             size,
+		offset:           image.Point{X: 0, Y: 0},
+		AllowOutOfBounds: allowOutOfBounds,
 	}
 }
 
-func (c *Canvas) SubCanvas(x, y int, size types.Size) *Canvas {
+func (c *Canvas) SubCanvas(x, y int, size types.Size, allowOutOfBounds *bool) *Canvas {
+	if allowOutOfBounds == nil {
+		allowOutOfBounds = &c.AllowOutOfBounds
+	}
+
 	return &Canvas{
-		Img:    c.Img,
-		Size:   size,
-		offset: image.Point{X: c.offset.X + x, Y: c.offset.Y + y},
+		Img:              c.Img,
+		Size:             size,
+		offset:           image.Point{X: c.offset.X + x, Y: c.offset.Y + y},
+		AllowOutOfBounds: *allowOutOfBounds,
 	}
 }
 
 func (c *Canvas) set(x, y int, color color.RGBA) {
-	c.assertPointInBounds(x, y)
+	if !c.AllowOutOfBounds {
+		c.assertPointInBounds(x, y)
+	} else if !c.isPointInBounds(x, y) {
+		return
+	}
+
 	c.Img.Set(c.offset.X+x, c.offset.Y+y, color)
 }
 
@@ -43,9 +55,15 @@ func (c *Canvas) get(x, y int) color.Color {
 	return c.Img.At(c.offset.X+x, c.offset.Y+y)
 }
 
+func (c *Canvas) isPointInBounds(x, y int) bool {
+	return x >= 0 && x < c.Size.Width && y >= 0 && y < c.Size.Height
+}
+
 func (c *Canvas) assertPointInBounds(x, y int) {
-	inBounds := x >= 0 && x < c.Size.Width && y >= 0 && y < c.Size.Height
-	if !inBounds {
+	if !c.isPointInBounds(x, y) {
+		if c.AllowOutOfBounds {
+			return
+		}
 		panic(ErrOutOfBounds)
 	}
 }

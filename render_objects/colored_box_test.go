@@ -9,7 +9,7 @@ import (
 )
 
 func TestColoredBox(t *testing.T) {
-	canvas := cv.NewCanvas(types.Size{Width: 200, Height: 100})
+	canvas := cv.NewCanvas(types.Size{Width: 200, Height: 100}, false)
 	blue := color.RGBA{0, 0, 255, 255}
 
 	box := &ColoredBox{

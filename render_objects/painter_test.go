@@ -9,7 +9,7 @@ import (
 )
 
 func TestPainter(t *testing.T) {
-	canvas := cv.NewCanvas(types.Size{Width: 100, Height: 100})
+	canvas := cv.NewCanvas(types.Size{Width: 100, Height: 100}, false)
 	red := color.RGBA{255, 0, 0, 255}
 	blue := color.RGBA{0, 0, 255, 255}
 
@@ -58,7 +58,7 @@ func TestPainter(t *testing.T) {
 }
 
 func TestPainterWithCustomSize(t *testing.T) {
-	canvas := cv.NewCanvas(types.Size{Width: 200, Height: 200})
+	canvas := cv.NewCanvas(types.Size{Width: 200, Height: 200}, false)
 	red := color.RGBA{255, 0, 0, 255}
 
 	// Create a painter with custom size

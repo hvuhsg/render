@@ -3,10 +3,7 @@ package canvas
 import "image/color"
 
 func (c *Canvas) Rectangle(x, y, w, h int, color color.RGBA, fill bool) {
-	c.assertPointInBounds(x, y)
-	c.assertPointInBounds(x+w-1, y)
-	c.assertPointInBounds(x, y+h-1)
-	c.assertPointInBounds(x+w-1, y+h-1)
+	// No bounds checking here; set will handle it
 
 	if fill {
 		// For filled rectangles, we can use a simpler approach

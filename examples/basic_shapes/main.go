@@ -10,7 +10,7 @@ import (
 
 func main() {
 	// Create a new canvas
-	canvas := cv.NewCanvas(types.Size{Width: 800, Height: 600})
+	canvas := cv.NewCanvas(types.Size{Width: 800, Height: 600}, false)
 
 	// Draw various shapes
 	canvas.Circle(400, 300, 100, cv.Red, true)           // Filled red circle

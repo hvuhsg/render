@@ -58,7 +58,7 @@ func (a *Align) Paint(canvas *cv.Canvas) {
 		y = (canvas.Size.Height - childSize.Height) / 2
 	}
 
-	childCanvas := canvas.SubCanvas(x, y, childSize)
+	childCanvas := canvas.SubCanvas(x, y, childSize, nil)
 	a.Child.Paint(childCanvas)
 }
 

@@ -12,7 +12,7 @@ type Stack struct {
 func (s *Stack) Paint(canvas *cv.Canvas) {
 	for _, child := range s.Children {
 		childSize := child.Size(canvas.Size)
-		childCanvas := canvas.SubCanvas(0, 0, childSize)
+		childCanvas := canvas.SubCanvas(0, 0, childSize, nil)
 		child.Paint(childCanvas)
 	}
 }

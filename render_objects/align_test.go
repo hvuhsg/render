@@ -9,7 +9,7 @@ import (
 )
 
 func TestAlign(t *testing.T) {
-	canvas := cv.NewCanvas(types.Size{Width: 200, Height: 200})
+	canvas := cv.NewCanvas(types.Size{Width: 200, Height: 200}, false)
 	red := color.RGBA{255, 0, 0, 255}
 
 	// Create a colored box

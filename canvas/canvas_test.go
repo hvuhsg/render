@@ -9,7 +9,7 @@ import (
 
 func TestNewCanvas(t *testing.T) {
 	size := types.Size{Width: 100, Height: 100}
-	canvas := NewCanvas(size)
+	canvas := NewCanvas(size, false)
 
 	if canvas.Size != size {
 		t.Errorf("Expected canvas size %v, got %v", size, canvas.Size)
@@ -21,8 +21,8 @@ func TestNewCanvas(t *testing.T) {
 }
 
 func TestSubCanvas(t *testing.T) {
-	parent := NewCanvas(types.Size{Width: 100, Height: 100})
-	sub := parent.SubCanvas(10, 10, types.Size{Width: 50, Height: 50})
+	parent := NewCanvas(types.Size{Width: 100, Height: 100}, false)
+	sub := parent.SubCanvas(10, 10, types.Size{Width: 50, Height: 50}, nil)
 
 	if sub.Size.Width != 50 || sub.Size.Height != 50 {
 		t.Errorf("Expected sub canvas size 50x50, got %v", sub.Size)
@@ -30,8 +30,8 @@ func TestSubCanvas(t *testing.T) {
 }
 
 func TestSubCanvasPixelOperations(t *testing.T) {
-	parent := NewCanvas(types.Size{Width: 100, Height: 100})
-	sub := parent.SubCanvas(10, 10, types.Size{Width: 50, Height: 50})
+	parent := NewCanvas(types.Size{Width: 100, Height: 100}, false)
+	sub := parent.SubCanvas(10, 10, types.Size{Width: 50, Height: 50}, nil)
 	red := color.RGBA{255, 0, 0, 255}
 
 	// Test setting a pixel in the subcanvas
@@ -47,8 +47,8 @@ func TestSubCanvasPixelOperations(t *testing.T) {
 }
 
 func TestSubCanvasBounds(t *testing.T) {
-	parent := NewCanvas(types.Size{Width: 100, Height: 100})
-	sub := parent.SubCanvas(10, 10, types.Size{Width: 50, Height: 50})
+	parent := NewCanvas(types.Size{Width: 100, Height: 100}, false)
+	sub := parent.SubCanvas(10, 10, types.Size{Width: 50, Height: 50}, nil)
 	red := color.RGBA{255, 0, 0, 255}
 
 	// Test valid bounds
@@ -67,9 +67,9 @@ func TestSubCanvasBounds(t *testing.T) {
 }
 
 func TestSubCanvasNested(t *testing.T) {
-	parent := NewCanvas(types.Size{Width: 100, Height: 100})
-	sub1 := parent.SubCanvas(10, 10, types.Size{Width: 50, Height: 50})
-	sub2 := sub1.SubCanvas(5, 5, types.Size{Width: 20, Height: 20})
+	parent := NewCanvas(types.Size{Width: 100, Height: 100}, false)
+	sub1 := parent.SubCanvas(10, 10, types.Size{Width: 50, Height: 50}, nil)
+	sub2 := sub1.SubCanvas(5, 5, types.Size{Width: 20, Height: 20}, nil)
 	red := color.RGBA{255, 0, 0, 255}
 
 	// Test setting a pixel in the nested subcanvas
@@ -85,7 +85,7 @@ func TestSubCanvasNested(t *testing.T) {
 }
 
 func TestSetPixel(t *testing.T) {
-	canvas := NewCanvas(types.Size{Width: 100, Height: 100})
+	canvas := NewCanvas(types.Size{Width: 100, Height: 100}, false)
 	red := color.RGBA{255, 0, 0, 255}
 
 	// Test valid pixel
@@ -104,8 +104,8 @@ func TestSetPixel(t *testing.T) {
 }
 
 func TestDrawCanvas(t *testing.T) {
-	parent := NewCanvas(types.Size{Width: 100, Height: 100})
-	child := NewCanvas(types.Size{Width: 50, Height: 50})
+	parent := NewCanvas(types.Size{Width: 100, Height: 100}, false)
+	child := NewCanvas(types.Size{Width: 50, Height: 50}, false)
 	red := color.RGBA{255, 0, 0, 255}
 
 	// Fill child canvas with red
@@ -129,8 +129,8 @@ func TestDrawCanvas(t *testing.T) {
 }
 
 func TestDrawCanvasOutOfBounds(t *testing.T) {
-	parent := NewCanvas(types.Size{Width: 100, Height: 100})
-	child := NewCanvas(types.Size{Width: 50, Height: 50})
+	parent := NewCanvas(types.Size{Width: 100, Height: 100}, false)
+	child := NewCanvas(types.Size{Width: 50, Height: 50}, false)
 
 	defer func() {
 		if r := recover(); r == nil {

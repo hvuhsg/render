@@ -24,7 +24,7 @@ func TestNewTextPainter(t *testing.T) {
 }
 
 func TestDrawText(t *testing.T) {
-	canvas := NewCanvas(types.Size{Width: 200, Height: 100})
+	canvas := NewCanvas(types.Size{Width: 200, Height: 100}, false)
 	red := color.RGBA{255, 0, 0, 255}
 
 	painter := NewTextPainter()
@@ -55,7 +55,7 @@ func TestDrawText(t *testing.T) {
 }
 
 func TestMeasureText(t *testing.T) {
-	canvas := NewCanvas(types.Size{Width: 200, Height: 100})
+	canvas := NewCanvas(types.Size{Width: 200, Height: 100}, false)
 	painter := NewTextPainter()
 	painter.FontSize = 24
 
@@ -83,7 +83,7 @@ func TestMeasureText(t *testing.T) {
 }
 
 func TestDrawTextOutOfBounds(t *testing.T) {
-	canvas := NewCanvas(types.Size{Width: 100, Height: 100})
+	canvas := NewCanvas(types.Size{Width: 100, Height: 100}, false)
 	painter := NewTextPainter()
 
 	// Test drawing text that would go out of bounds

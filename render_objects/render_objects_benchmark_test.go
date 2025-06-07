@@ -9,7 +9,7 @@ import (
 )
 
 func BenchmarkColoredBox(b *testing.B) {
-	canvas := cv.NewCanvas(types.Size{Width: 1000, Height: 1000})
+	canvas := cv.NewCanvas(types.Size{Width: 1000, Height: 1000}, false)
 	red := color.RGBA{255, 0, 0, 255}
 	box := &ColoredBox{Width: 100, Height: 100, Color: red}
 
@@ -27,7 +27,7 @@ func BenchmarkColoredBox(b *testing.B) {
 }
 
 func BenchmarkText(b *testing.B) {
-	canvas := cv.NewCanvas(types.Size{Width: 1000, Height: 1000})
+	canvas := cv.NewCanvas(types.Size{Width: 1000, Height: 1000}, false)
 	black := color.Black
 	text := NewText("Hello, World!", black, 24, "default")
 
@@ -45,7 +45,7 @@ func BenchmarkText(b *testing.B) {
 }
 
 func BenchmarkRow(b *testing.B) {
-	canvas := cv.NewCanvas(types.Size{Width: 1000, Height: 1000})
+	canvas := cv.NewCanvas(types.Size{Width: 1000, Height: 1000}, false)
 	red := color.RGBA{255, 0, 0, 255}
 	blue := color.RGBA{0, 0, 255, 255}
 
@@ -76,7 +76,7 @@ func BenchmarkRow(b *testing.B) {
 }
 
 func BenchmarkColumn(b *testing.B) {
-	canvas := cv.NewCanvas(types.Size{Width: 1000, Height: 1000})
+	canvas := cv.NewCanvas(types.Size{Width: 1000, Height: 1000}, false)
 	red := color.RGBA{255, 0, 0, 255}
 	blue := color.RGBA{0, 0, 255, 255}
 
@@ -107,7 +107,7 @@ func BenchmarkColumn(b *testing.B) {
 }
 
 func BenchmarkStack(b *testing.B) {
-	canvas := cv.NewCanvas(types.Size{Width: 1000, Height: 1000})
+	canvas := cv.NewCanvas(types.Size{Width: 1000, Height: 1000}, false)
 	red := color.RGBA{255, 0, 0, 255}
 	blue := color.RGBA{0, 0, 255, 255}
 	green := color.RGBA{0, 255, 0, 255}
@@ -137,7 +137,7 @@ func BenchmarkStack(b *testing.B) {
 }
 
 func BenchmarkAlign(b *testing.B) {
-	canvas := cv.NewCanvas(types.Size{Width: 1000, Height: 1000})
+	canvas := cv.NewCanvas(types.Size{Width: 1000, Height: 1000}, false)
 	red := color.RGBA{255, 0, 0, 255}
 	box := &ColoredBox{Width: 100, Height: 100, Color: red}
 
@@ -160,7 +160,7 @@ func BenchmarkAlign(b *testing.B) {
 }
 
 func BenchmarkPainter(b *testing.B) {
-	canvas := cv.NewCanvas(types.Size{Width: 1000, Height: 1000})
+	canvas := cv.NewCanvas(types.Size{Width: 1000, Height: 1000}, false)
 	red := color.RGBA{255, 0, 0, 255}
 
 	painter := &Painter{

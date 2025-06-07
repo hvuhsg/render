@@ -9,7 +9,7 @@ import (
 )
 
 func TestText(t *testing.T) {
-	canvas := cv.NewCanvas(types.Size{Width: 200, Height: 100})
+	canvas := cv.NewCanvas(types.Size{Width: 200, Height: 100}, false)
 	red := color.RGBA{255, 0, 0, 255}
 
 	text := NewText("Hello", red, 24, "default")

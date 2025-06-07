@@ -6,8 +6,7 @@ import (
 )
 
 func (c *Canvas) Line(x1, y1, x2, y2 int, color color.RGBA, width int) {
-	c.assertPointInBounds(x1, y1)
-	c.assertPointInBounds(x2, y2)
+	// No bounds checking here; set will handle it
 
 	// Handle single point case
 	if x1 == x2 && y1 == y2 {
@@ -54,7 +53,7 @@ func (c *Canvas) drawLine(x1, y1, x2, y2 int, color color.RGBA) {
 	}
 }
 
-// drawThickLine draws a line with width using an optimized approach
+// drawThickLine draws a line with width by drawing multiple parallel lines
 func (c *Canvas) drawThickLine(x1, y1, x2, y2 int, color color.RGBA, width int) {
 	if width <= 1 {
 		c.drawLine(x1, y1, x2, y2, color)
@@ -66,7 +65,7 @@ func (c *Canvas) drawThickLine(x1, y1, x2, y2 int, color color.RGBA, width int) 
 	dy := float64(y2 - y1)
 	length := math.Sqrt(dx*dx + dy*dy)
 	if length == 0 {
-		c.Circle(x1, y1, width, color, true)
+		c.Circle(x1, y1, width/2, color, true)
 		return
 	}
 
@@ -75,29 +74,17 @@ func (c *Canvas) drawThickLine(x1, y1, x2, y2 int, color color.RGBA, width int) 
 	px := -dy / length * halfWidth
 	py := dx / length * halfWidth
 
-	// Calculate the four corners
-	x1f, y1f := float64(x1), float64(y1)
-	x2f, y2f := float64(x2), float64(y2)
+	// Draw multiple parallel lines to achieve the desired width
+	steps := width
+	for i := 0; i < steps; i++ {
+		// Calculate offset for this line
+		offset := float64(i) - float64(steps-1)/2
+		offsetX := int(math.Round(px * offset / halfWidth))
+		offsetY := int(math.Round(py * offset / halfWidth))
 
-	// Calculate the four corners of the line rectangle
-	corners := [][2]float64{
-		{x1f + px, y1f + py},
-		{x1f - px, y1f - py},
-		{x2f - px, y2f - py},
-		{x2f + px, y2f + py},
+		// Draw the parallel line
+		c.drawLine(x1+offsetX, y1+offsetY, x2+offsetX, y2+offsetY, color)
 	}
-
-	// Convert corners to integers
-	points := make([][2]int, 4)
-	for i, corner := range corners {
-		points[i] = [2]int{
-			int(math.Round(corner[0])),
-			int(math.Round(corner[1])),
-		}
-	}
-
-	// Draw the filled polygon
-	c.Polygon(points, color, true)
 }
 
 func abs(x int) int {

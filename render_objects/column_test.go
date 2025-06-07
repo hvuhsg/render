@@ -9,7 +9,7 @@ import (
 )
 
 func TestColumn(t *testing.T) {
-	canvas := cv.NewCanvas(types.Size{Width: 100, Height: 300})
+	canvas := cv.NewCanvas(types.Size{Width: 100, Height: 300}, false)
 	red := color.RGBA{255, 0, 0, 255}
 	blue := color.RGBA{0, 0, 255, 255}
 

@@ -184,3 +184,39 @@ func BenchmarkPainter(b *testing.B) {
 		}
 	})
 }
+
+func BenchmarkPadding(b *testing.B) {
+	canvas := cv.NewCanvas(types.Size{Width: 1000, Height: 1000}, false)
+	red := color.RGBA{255, 0, 0, 255}
+	box := &ColoredBox{Width: 100, Height: 100, Color: red}
+
+	// Test equal padding
+	equalPadding := NewPadding(box, 20)
+
+	b.Run("EqualPadding/Paint", func(b *testing.B) {
+		for b.Loop() {
+			equalPadding.Paint(canvas)
+		}
+	})
+
+	b.Run("EqualPadding/Size", func(b *testing.B) {
+		for b.Loop() {
+			equalPadding.Size(canvas.Size)
+		}
+	})
+
+	// Test different padding for each side
+	differentPadding := NewPaddingWithSides(box, 10, 20, 30, 40)
+
+	b.Run("DifferentPadding/Paint", func(b *testing.B) {
+		for b.Loop() {
+			differentPadding.Paint(canvas)
+		}
+	})
+
+	b.Run("DifferentPadding/Size", func(b *testing.B) {
+		for b.Loop() {
+			differentPadding.Size(canvas.Size)
+		}
+	})
+}

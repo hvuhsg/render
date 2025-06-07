@@ -32,22 +32,29 @@ func main() {
 
 func createRenderTree() render_objects.RenderObject {
 	// Create a column of text elements with some spacing
-	polygon := &render_objects.Painter{
-		Painter: func(canvas *cv.Canvas) {
-			canvas.Polygon([][2]int{
-				{100, 100},
-				{235, 189},
-				{129, 599},
-			}, cv.Red, false)
-		},
-		Width:  800,
-		Height: 600,
+	box := &render_objects.ColoredBox{
+		Color:  cv.Red,
+		Width:  100,
+		Height: 100,
+	}
+
+	padding := &render_objects.Padding{
+		Child:  box,
+		Top:    100,
+		Left:   100,
+		Right:  100,
+		Bottom: 100,
+	}
+
+	column := &render_objects.Column{
+		Children: []render_objects.RenderObject{padding, box},
+		Sizing:   types.MainAxisSizeMin,
 	}
 
 	// Center everything in the canvas
 	align := &render_objects.Align{
-		Child: polygon,
-		Align: render_objects.AlignCenter,
+		Child: column,
+		Align: render_objects.AlignTopLeft,
 	}
 
 	return align

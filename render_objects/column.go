@@ -6,9 +6,11 @@ import (
 )
 
 type Column struct {
-	Alignment types.MainAxisAlignment
-	Sizing    types.MainAxisSize
-	Children  []RenderObject
+	Alignment      types.MainAxisAlignment
+	Sizing         types.MainAxisSize
+	Children       []RenderObject
+	cachedSize     *types.Size
+	lastParentSize types.Size
 }
 
 func (c *Column) Paint(canvas *cv.Canvas) {
@@ -99,15 +101,20 @@ func (c *Column) Paint(canvas *cv.Canvas) {
 }
 
 func (c *Column) Size(parentSize types.Size) types.Size {
-	totalHeight := 0
-	for _, child := range c.Children {
-		totalHeight += child.Size(parentSize).Height
+	// Check if we can use cached size
+	if c.cachedSize != nil && c.lastParentSize == parentSize {
+		return *c.cachedSize
 	}
 
+	totalHeight := 0
 	maxWidth := 0
+
+	// Calculate sizes in a single pass without storing all sizes
 	for _, child := range c.Children {
-		if child.Size(parentSize).Width > maxWidth {
-			maxWidth = child.Size(parentSize).Width
+		size := child.Size(parentSize)
+		totalHeight += size.Height
+		if size.Width > maxWidth {
+			maxWidth = size.Width
 		}
 	}
 
@@ -118,8 +125,13 @@ func (c *Column) Size(parentSize types.Size) types.Size {
 		height = parentSize.Height
 	}
 
-	return types.Size{
+	// Cache the result
+	size := types.Size{
 		Width:  maxWidth,
 		Height: height,
 	}
+	c.cachedSize = &size
+	c.lastParentSize = parentSize
+
+	return size
 }

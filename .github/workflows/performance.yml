@@ -1,0 +1,75 @@
+name: Performance Testing
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history for comparing with previous commits
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+
+      - name: Install dependencies
+        run: go mod download
+
+      - name: Install benchcmp
+        run: go install golang.org/x/tools/cmd/benchcmp@latest
+
+      - name: Run benchmarks on current code
+        run: |
+          go test -bench=. -benchmem ./render_objects/... > current_bench.txt
+
+      - name: Run benchmarks on previous commit
+        if: github.event_name == 'pull_request'
+        run: |
+          git checkout ${{ github.event.pull_request.base.sha }}
+          go test -bench=. -benchmem ./render_objects/... > previous_bench.txt
+          git checkout ${{ github.event.pull_request.head.sha }}
+
+      - name: Compare benchmarks
+        if: github.event_name == 'pull_request'
+        run: |
+          benchcmp previous_bench.txt current_bench.txt > bench_comparison.txt
+          echo "Benchmark comparison results:"
+          cat bench_comparison.txt
+
+          # Check for significant performance regressions
+          if grep -q "ns/op" bench_comparison.txt; then
+            if grep -q "ns/op.*\+" bench_comparison.txt; then
+              echo "Performance regression detected!"
+              exit 1
+            fi
+          fi
+
+      - name: Generate CPU profile
+        run: |
+          go test -bench=. -cpuprofile=cpu.prof ./render_objects/...
+          go tool pprof -text cpu.prof > cpu_profile.txt
+
+      - name: Generate Memory profile
+        run: |
+          go test -bench=. -memprofile=mem.prof ./render_objects/...
+          go tool pprof -text mem.prof > mem_profile.txt
+
+      - name: Upload benchmark results
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results
+          path: |
+            current_bench.txt
+            previous_bench.txt
+            bench_comparison.txt
+            cpu_profile.txt
+            mem_profile.txt
+          if-no-files-found: error

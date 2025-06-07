@@ -29,6 +29,61 @@ func TestSubCanvas(t *testing.T) {
 	}
 }
 
+func TestSubCanvasPixelOperations(t *testing.T) {
+	parent := NewCanvas(types.Size{Width: 100, Height: 100})
+	sub := parent.SubCanvas(10, 10, types.Size{Width: 50, Height: 50})
+	red := color.RGBA{255, 0, 0, 255}
+
+	// Test setting a pixel in the subcanvas
+	sub.set(0, 0, red)
+	if parent.Img.At(10, 10) != red {
+		t.Error("Expected red pixel at (10,10) in parent canvas")
+	}
+
+	// Test getting a pixel from the subcanvas
+	if sub.get(0, 0) != red {
+		t.Error("Expected red pixel at (0,0) in subcanvas")
+	}
+}
+
+func TestSubCanvasBounds(t *testing.T) {
+	parent := NewCanvas(types.Size{Width: 100, Height: 100})
+	sub := parent.SubCanvas(10, 10, types.Size{Width: 50, Height: 50})
+	red := color.RGBA{255, 0, 0, 255}
+
+	// Test valid bounds
+	sub.set(49, 49, red)
+	if parent.Img.At(59, 59) != red {
+		t.Error("Expected red pixel at (59,59) in parent canvas")
+	}
+
+	// Test out of bounds
+	defer func() {
+		if r := recover(); r == nil {
+			t.Error("Expected panic for out of bounds pixel in subcanvas")
+		}
+	}()
+	sub.set(50, 50, red)
+}
+
+func TestSubCanvasNested(t *testing.T) {
+	parent := NewCanvas(types.Size{Width: 100, Height: 100})
+	sub1 := parent.SubCanvas(10, 10, types.Size{Width: 50, Height: 50})
+	sub2 := sub1.SubCanvas(5, 5, types.Size{Width: 20, Height: 20})
+	red := color.RGBA{255, 0, 0, 255}
+
+	// Test setting a pixel in the nested subcanvas
+	sub2.set(0, 0, red)
+	if parent.Img.At(15, 15) != red {
+		t.Error("Expected red pixel at (15,15) in parent canvas")
+	}
+
+	// Test getting a pixel from the nested subcanvas
+	if sub2.get(0, 0) != red {
+		t.Error("Expected red pixel at (0,0) in nested subcanvas")
+	}
+}
+
 func TestSetPixel(t *testing.T) {
 	canvas := NewCanvas(types.Size{Width: 100, Height: 100})
 	red := color.RGBA{255, 0, 0, 255}

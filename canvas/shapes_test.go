@@ -515,3 +515,46 @@ func TestLineWidthOutOfBoundsAllowed(t *testing.T) {
 		})
 	}
 }
+
+func TestThickDiagonalLine(t *testing.T) {
+	canvas := NewCanvas(types.Size{Width: 100, Height: 100}, false)
+	red := color.RGBA{255, 0, 0, 255}
+
+	// Draw a thick diagonal line
+	width := 10
+	x1, y1, x2, y2 := 10, 10, 90, 90
+	canvas.Line(x1, y1, x2, y2, red, width)
+
+	// Sample points along the line and check that a disk of the given width is filled at each point
+	steps := 100
+	dx := float64(x2-x1) / float64(steps-1)
+	dy := float64(y2-y1) / float64(steps-1)
+	radius := width / 2
+
+	for i := 0; i < steps; i++ {
+		x := int(float64(x1) + dx*float64(i))
+		y := int(float64(y1) + dy*float64(i))
+		filled := false
+		// Check a disk around (x, y)
+		for oy := -radius; oy <= radius; oy++ {
+			for ox := -radius; ox <= radius; ox++ {
+				if ox*ox+oy*oy <= radius*radius {
+					xx := x + ox
+					yy := y + oy
+					if xx >= 0 && xx < 100 && yy >= 0 && yy < 100 {
+						if canvas.Img.At(xx, yy) == red {
+							filled = true
+							break
+						}
+					}
+				}
+			}
+			if filled {
+				break
+			}
+		}
+		if !filled {
+			t.Errorf("Expected thick line to be filled at (%d,%d)", x, y)
+		}
+	}
+}

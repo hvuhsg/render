@@ -53,7 +53,7 @@ func (c *Canvas) drawLine(x1, y1, x2, y2 int, color color.RGBA) {
 	}
 }
 
-// drawThickLine draws a line with width by drawing multiple parallel lines
+// drawThickLine draws a line with width by drawing a filled polygon between parallel lines
 func (c *Canvas) drawThickLine(x1, y1, x2, y2 int, color color.RGBA, width int) {
 	if width <= 1 {
 		c.drawLine(x1, y1, x2, y2, color)
@@ -74,17 +74,20 @@ func (c *Canvas) drawThickLine(x1, y1, x2, y2 int, color color.RGBA, width int) 
 	px := -dy / length * halfWidth
 	py := dx / length * halfWidth
 
-	// Draw multiple parallel lines to achieve the desired width
-	steps := width
-	for i := 0; i < steps; i++ {
-		// Calculate offset for this line
-		offset := float64(i) - float64(steps-1)/2
-		offsetX := int(math.Round(px * offset / halfWidth))
-		offsetY := int(math.Round(py * offset / halfWidth))
-
-		// Draw the parallel line
-		c.drawLine(x1+offsetX, y1+offsetY, x2+offsetX, y2+offsetY, color)
+	// Calculate the four corners of the thick line
+	corners := [][2]int{
+		{x1 + int(math.Round(px)), y1 + int(math.Round(py))},
+		{x1 - int(math.Round(px)), y1 - int(math.Round(py))},
+		{x2 - int(math.Round(px)), y2 - int(math.Round(py))},
+		{x2 + int(math.Round(px)), y2 + int(math.Round(py))},
 	}
+
+	// Draw the filled polygon
+	c.Polygon(corners, color, true)
+
+	// Add extra coverage for the end caps
+	c.Circle(x1, y1, width/2, color, true)
+	c.Circle(x2, y2, width/2, color, true)
 }
 
 func abs(x int) int {
